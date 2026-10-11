@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de datos</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 30px 25px;
+        }
+        h1 {
+            color: #0d47a1;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+        }
+        label {
+            display: block;
+            margin-top: 14px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #37474f;
+            font-size: 0.95rem;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1.5px solid #b0bec5;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .radio-group {
+            margin-top: 6px;
+        }
+        .radio-group label {
+            display: inline;
+            font-weight: 400;
+            margin-right: 16px;
+            margin-top: 0;
+        }
+        input[type="submit"] {
+            margin-top: 22px;
+            width: 100%;
+            padding: 13px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        input[type="submit"]:hover { background: #0d47a1; }
+        .volver {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #1976d2;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .seccion {
+            margin-top: 22px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+            color: #1565c0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Captura de datos</h1>
+
+        <form method="POST" action="">
+            <!-- Datos personales -->
+            <p class="seccion">Datos personales</p>
+
+            <label>Nombre(s)</label>
+            <input type="text" name="nomtxt" placeholder="Escribe tu nombre" required>
+
+            <label>Apellido Paterno</label>
+            <input type="text" name="apptxt" placeholder="Apellido paterno" required>
+
+            <label>Apellido Materno</label>
+            <input type="text" name="apmtxt" placeholder="Apellido materno">
+
+            <label>Fecha de nacimiento</label>
+            <input type="date" name="fechanac">
+
+            <label>Edad</label>
+            <input type="number" name="edad" min="1" max="120" placeholder="Edad">
+
+            <label>Sexo</label>
+            <div class="radio-group">
+                <input type="radio" name="sexrad" value="masculino" id="masc">
+                <label for="masc">Masculino</label>
+                <input type="radio" name="sexrad" value="femenino" id="fem">
+                <label for="fem">Femenino</label>
+                <input type="radio" name="sexrad" value="otro" id="otro">
+                <label for="otro">Prefiero no decir</label>
+            </div>
+
+            <!-- Contacto -->
+            <p class="seccion">Datos de contacto</p>
+
+            <label>Correo electrónico</label>
+            <input type="email" name="correo" placeholder="ejemplo@correo.com">
+
+            <label>Teléfono / Celular</label>
+            <input type="tel" name="telefono" placeholder="55 1234 5678">
+
+            <!-- Ubicación -->
+            <p class="seccion">Ubicación</p>
+
+            <label>Municipio de procedencia</label>
+            <select name="munsel">
+                <option value="">-- Selecciona un municipio --</option>
+                <option value="Tlaxcoapan">Tlaxcoapan</option>
+                <option value="Atitalaquia">Atitalaquia</option>
+                <option value="Tezontepec de Aldama">Tezontepec de Aldama</option>
+                <option value="Ajacuba">Ajacuba</option>
+                <option value="Tula de Allende">Tula de Allende</option>
+                <option value="Tetepango">Tetepango</option>
+                <option value="Tlahuelilpan">Tlahuelilpan</option>
+                <option value="Chilcuautla">Chilcuautla</option>
+                <option value="Mixquiahuala de Juárez">Mixquiahuala de Juárez</option>
+                <option value="Progreso de Obregón">Progreso de Obregón</option>
+                <option value="Francisco I. Madero">Francisco I. Madero</option>
+                <option value="San Salvador">San Salvador</option>
+                <option value="Actopan">Actopan</option>
+                <option value="El Arenal">El Arenal</option>
+            </select>
+
+            <label>Colonia o localidad</label>
+            <input type="text" name="colonia" placeholder="Colonia o localidad">
+
+            <label>Código Postal</label>
+            <input type="text" name="cp" placeholder="Código postal" maxlength="5">
+
+            <!-- Académicos -->
+            <p class="seccion">Datos académicos</p>
+
+            <label>Escuela / Institución</label>
+            <input type="text" name="escuela" placeholder="Nombre de tu escuela">
+
+            <label>Grado o semestre</label>
+            <input type="text" name="grado" placeholder="Ej. 3° semestre">
+
+            <label>Comentarios adicionales</label>
+            <textarea name="comentarios" placeholder="Escribe aquí si quieres agregar algo..."></textarea>
+
+            <input type="submit" name="envbot" value="Enviar">
+        </form>
+
+        <a href="inicioing.html" class="volver">← Volver al inicio</a>
+    </div>
+</body>
+</html>

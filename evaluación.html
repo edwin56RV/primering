@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación - Presente Progresivo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            min-height: 100vh;
+            padding: 30px 15px;
+            color: #1a237e;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            padding: 32px 28px;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #0d47a1;
+            text-align: center;
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #546e7a;
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+        }
+
+        .pregunta {
+            margin-bottom: 26px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s;
+        }
+
+        .pregunta:last-of-type {
+            border-bottom: none;
+        }
+
+        .pregunta > label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 12px;
+            color: #263238;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .opcion {
+            margin: 7px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .opcion:hover {
+            background: #f5f5f5;
+        }
+
+        .opcion input[type="radio"] {
+            transform: scale(1.15);
+            cursor: pointer;
+            accent-color: #1976d2;
+        }
+
+        .opcion label {
+            margin-left: 10px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Estados después de calificar */
+        .correcta {
+            background: #e8f5e9 !important;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .incorrecta {
+            background: #ffebee !important;
+            border-left: 4px solid #c62828;
+        }
+
+        .respuesta-correcta {
+            font-size: 0.9rem;
+            color: #2e7d32;
+            margin-top: 6px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .btn-calificar {
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.15s;
+        }
+
+        .btn-calificar:hover {
+            background: #0d47a1;
+            transform: translateY(-1px);
+        }
+
+        .btn-calificar:active {
+            transform: translateY(0);
+        }
+
+        .btn-reintentar {
+            display: none;
+            margin-top: 12px;
+            width: 100%;
+            padding: 13px;
+            background: #455a64;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+
+        .btn-reintentar:hover {
+            background: #37474f;
+        }
+
+        .resultado {
+            display: none;
+            margin-top: 28px;
+            padding: 22px;
+            border-radius: 12px;
+            text-align: center;
+            animation: aparecer 0.4s ease;
+        }
+
+        .resultado.aprobado {
+            background: #e8f5e9;
+            border: 2px solid #66bb6a;
+        }
+
+        .resultado.reprobado {
+            background: #ffebee;
+            border: 2px solid #ef5350;
+        }
+
+        .resultado h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .resultado .puntaje {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .resultado .porcentaje {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .resultado .mensaje {
+            margin-top: 12px;
+            font-size: 1.05rem;
+        }
+
+        .volver {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #1976d2;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .volver:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 18px;
+            }
+            h1 {
+                font-size: 1.35rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Evaluación del Presente Progresivo</h1>
+        <p class="subtitulo">Examen · 20 preguntas · Selecciona la respuesta correcta</p>
+
+        <form id="examenForm">
+            <!-- Pregunta 1 -->
+            <div class="pregunta" data-correcta="d">
+                <label>1.- ¿Qué tiempo verbal se usa para describir acciones que ocurren en el momento exacto de hablar?</label>
+                <div class="opcion"><input type="radio" name="pre1" value="a" id="p1a"><label for="p1a">Pasado simple</label></div>
+                <div class="opcion"><input type="radio" name="pre1" value="b" id="p1b"><label for="p1b">Pasado compuesto</label></div>
+                <div class="opcion"><input type="radio" name="pre1" value="c" id="p1c"><label for="p1c">Presente simple</label></div>
+                <div class="opcion"><input type="radio" name="pre1" value="d" id="p1d"><label for="p1d">Presente progresivo</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Presente progresivo</div>
+            </div>
+
+            <!-- Pregunta 2 -->
+            <div class="pregunta" data-correcta="a">
+                <label>2.- ¿Cuál es un ejemplo correcto del presente continuo?</label>
+                <div class="opcion"><input type="radio" name="pre2" value="a" id="p2a"><label for="p2a">¿Estás estudiando?</label></div>
+                <div class="opcion"><input type="radio" name="pre2" value="b" id="p2b"><label for="p2b">¿Ya estudiaste?</label></div>
+                <div class="opcion"><input type="radio" name="pre2" value="c" id="p2c"><label for="p2c">¿Vas a estudiar?</label></div>
+                <div class="opcion"><input type="radio" name="pre2" value="d" id="p2d"><label for="p2d">Vamos a estudiar</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: ¿Estás estudiando?</div>
+            </div>
+
+            <!-- Pregunta 3 -->
+            <div class="pregunta" data-correcta="b">
+                <label>3.- ¿Cuál es la estructura correcta del presente progresivo?</label>
+                <div class="opcion"><input type="radio" name="pre3" value="a" id="p3a"><label for="p3a">Sujeto + verbo en pasado</label></div>
+                <div class="opcion"><input type="radio" name="pre3" value="b" id="p3b"><label for="p3b">Sujeto + am/is/are + verbo-ing</label></div>
+                <div class="opcion"><input type="radio" name="pre3" value="c" id="p3c"><label for="p3c">Sujeto + will + verbo</label></div>
+                <div class="opcion"><input type="radio" name="pre3" value="d" id="p3d"><label for="p3d">Sujeto + have + verbo</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Sujeto + am/is/are + verbo-ing</div>
+            </div>
+
+            <!-- Pregunta 4 -->
+            <div class="pregunta" data-correcta="b">
+                <label>4.- Completa: She _____ (watch) a movie right now.</label>
+                <div class="opcion"><input type="radio" name="pre4" value="a" id="p4a"><label for="p4a">watches</label></div>
+                <div class="opcion"><input type="radio" name="pre4" value="b" id="p4b"><label for="p4b">is watching</label></div>
+                <div class="opcion"><input type="radio" name="pre4" value="c" id="p4c"><label for="p4c">watched</label></div>
+                <div class="opcion"><input type="radio" name="pre4" value="d" id="p4d"><label for="p4d">will watch</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: is watching</div>
+            </div>
+
+            <!-- Pregunta 5 -->
+            <div class="pregunta" data-correcta="b">
+                <label>5.- Completa: They _____ (not / play) soccer at the moment.</label>
+                <div class="opcion"><input type="radio" name="pre5" value="a" id="p5a"><label for="p5a">don't play</label></div>
+                <div class="opcion"><input type="radio" name="pre5" value="b" id="p5b"><label for="p5b">aren't playing</label></div>
+                <div class="opcion"><input type="radio" name="pre5" value="c" id="p5c"><label for="p5c">didn't play</label></div>
+                <div class="opcion"><input type="radio" name="pre5" value="d" id="p5d"><label for="p5d">won't play</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: aren't playing</div>
+            </div>
+
+            <!-- Pregunta 6 -->
+            <div class="pregunta" data-correcta="b">
+                <label>6.- ¿Cuál de estas oraciones está en presente progresivo?</label>
+                <div class="opcion"><input type="radio" name="pre6" value="a" id="p6a"><label for="p6a">I eat breakfast every day.</label></div>
+                <div class="opcion"><input type="radio" name="pre6" value="b" id="p6b"><label for="p6b">I am eating breakfast now.</label></div>
+                <div class="opcion"><input type="radio" name="pre6" value="c" id="p6c"><label for="p6c">I ate breakfast yesterday.</label></div>
+                <div class="opcion"><input type="radio" name="pre6" value="d" id="p6d"><label for="p6d">I will eat breakfast tomorrow.</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: I am eating breakfast now.</div>
+            </div>
+
+            <!-- Pregunta 7 -->
+            <div class="pregunta" data-correcta="b">
+                <label>7.- Completa: _____ you _____ (do) your homework?</label>
+                <div class="opcion"><input type="radio" name="pre7" value="a" id="p7a"><label for="p7a">Do / do</label></div>
+                <div class="opcion"><input type="radio" name="pre7" value="b" id="p7b"><label for="p7b">Are / doing</label></div>
+                <div class="opcion"><input type="radio" name="pre7" value="c" id="p7c"><label for="p7c">Did / do</label></div>
+                <div class="opcion"><input type="radio" name="pre7" value="d" id="p7d"><label for="p7d">Will / do</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Are / doing</div>
+            </div>
+
+            <!-- Pregunta 8 -->
+            <div class="pregunta" data-correcta="b">
+                <label>8.- El presente progresivo también se puede usar para:</label>
+                <div class="opcion"><input type="radio" name="pre8" value="a" id="p8a"><label for="p8a">Hablar solo del pasado</label></div>
+                <div class="opcion"><input type="radio" name="pre8" value="b" id="p8b"><label for="p8b">Planes futuros cercanos</label></div>
+                <div class="opcion"><input type="radio" name="pre8" value="c" id="p8c"><label for="p8c">Hechos históricos</label></div>
+                <div class="opcion"><input type="radio" name="pre8" value="d" id="p8d"><label for="p8d">Reglas generales</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Planes futuros cercanos</div>
+            </div>
+
+            <!-- Pregunta 9 -->
+            <div class="pregunta" data-correcta="b">
+                <label>9.- Completa: Look! The baby _____ (sleep).</label>
+                <div class="opcion"><input type="radio" name="pre9" value="a" id="p9a"><label for="p9a">sleeps</label></div>
+                <div class="opcion"><input type="radio" name="pre9" value="b" id="p9b"><label for="p9b">is sleeping</label></div>
+                <div class="opcion"><input type="radio" name="pre9" value="c" id="p9c"><label for="p9c">slept</label></div>
+                <div class="opcion"><input type="radio" name="pre9" value="d" id="p9d"><label for="p9d">will sleep</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: is sleeping</div>
+            </div>
+
+            <!-- Pregunta 10 -->
+            <div class="pregunta" data-correcta="b">
+                <label>10.- ¿Cuál es la forma negativa correcta?</label>
+                <div class="opcion"><input type="radio" name="pre10" value="a" id="p10a"><label for="p10a">He not is working.</label></div>
+                <div class="opcion"><input type="radio" name="pre10" value="b" id="p10b"><label for="p10b">He isn't working.</label></div>
+                <div class="opcion"><input type="radio" name="pre10" value="c" id="p10c"><label for="p10c">He don't working.</label></div>
+                <div class="opcion"><input type="radio" name="pre10" value="d" id="p10d"><label for="p10d">He not working.</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: He isn't working.</div>
+            </div>
+
+            <!-- Pregunta 11 -->
+            <div class="pregunta" data-correcta="b">
+                <label>11.- Completa: We _____ (study) English this semester.</label>
+                <div class="opcion"><input type="radio" name="pre11" value="a" id="p11a"><label for="p11a">study</label></div>
+                <div class="opcion"><input type="radio" name="pre11" value="b" id="p11b"><label for="p11b">are studying</label></div>
+                <div class="opcion"><input type="radio" name="pre11" value="c" id="p11c"><label for="p11c">studied</label></div>
+                <div class="opcion"><input type="radio" name="pre11" value="d" id="p11d"><label for="p11d">will study</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: are studying</div>
+            </div>
+
+            <!-- Pregunta 12 -->
+            <div class="pregunta" data-correcta="b">
+                <label>12.- Completa: _____ she _____ (cook) dinner right now?</label>
+                <div class="opcion"><input type="radio" name="pre12" value="a" id="p12a"><label for="p12a">Does / cook</label></div>
+                <div class="opcion"><input type="radio" name="pre12" value="b" id="p12b"><label for="p12b">Is / cooking</label></div>
+                <div class="opcion"><input type="radio" name="pre12" value="c" id="p12c"><label for="p12c">Did / cook</label></div>
+                <div class="opcion"><input type="radio" name="pre12" value="d" id="p12d"><label for="p12d">Will / cook</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Is / cooking</div>
+            </div>
+
+            <!-- Pregunta 13 -->
+            <div class="pregunta" data-correcta="b">
+                <label>13.- ¿Qué verbo se usa como auxiliar en el presente progresivo?</label>
+                <div class="opcion"><input type="radio" name="pre13" value="a" id="p13a"><label for="p13a">to have</label></div>
+                <div class="opcion"><input type="radio" name="pre13" value="b" id="p13b"><label for="p13b">to be (am / is / are)</label></div>
+                <div class="opcion"><input type="radio" name="pre13" value="c" id="p13c"><label for="p13c">to do</label></div>
+                <div class="opcion"><input type="radio" name="pre13" value="d" id="p13d"><label for="p13d">to will</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: to be (am / is / are)</div>
+            </div>
+
+            <!-- Pregunta 14 -->
+            <div class="pregunta" data-correcta="b">
+                <label>14.- Completa: I _____ (not / listen) to music at the moment.</label>
+                <div class="opcion"><input type="radio" name="pre14" value="a" id="p14a"><label for="p14a">don't listen</label></div>
+                <div class="opcion"><input type="radio" name="pre14" value="b" id="p14b"><label for="p14b">am not listening</label></div>
+                <div class="opcion"><input type="radio" name="pre14" value="c" id="p14c"><label for="p14c">didn't listen</label></div>
+                <div class="opcion"><input type="radio" name="pre14" value="d" id="p14d"><label for="p14d">won't listen</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: am not listening</div>
+            </div>
+
+            <!-- Pregunta 15 -->
+            <div class="pregunta" data-correcta="b">
+                <label>15.- ¿Cuál oración expresa un plan futuro cercano?</label>
+                <div class="opcion"><input type="radio" name="pre15" value="a" id="p15a"><label for="p15a">I go to the cinema every Friday.</label></div>
+                <div class="opcion"><input type="radio" name="pre15" value="b" id="p15b"><label for="p15b">I am going to the cinema tonight.</label></div>
+                <div class="opcion"><input type="radio" name="pre15" value="c" id="p15c"><label for="p15c">I went to the cinema yesterday.</label></div>
+                <div class="opcion"><input type="radio" name="pre15" value="d" id="p15d"><label for="p15d">I have been to the cinema.</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: I am going to the cinema tonight.</div>
+            </div>
+
+            <!-- Pregunta 16 -->
+            <div class="pregunta" data-correcta="b">
+                <label>16.- Completa: The students _____ (write) an exam now.</label>
+                <div class="opcion"><input type="radio" name="pre16" value="a" id="p16a"><label for="p16a">write</label></div>
+                <div class="opcion"><input type="radio" name="pre16" value="b" id="p16b"><label for="p16b">are writing</label></div>
+                <div class="opcion"><input type="radio" name="pre16" value="c" id="p16c"><label for="p16c">wrote</label></div>
+                <div class="opcion"><input type="radio" name="pre16" value="d" id="p16d"><label for="p16d">will write</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: are writing</div>
+            </div>
+
+            <!-- Pregunta 17 -->
+            <div class="pregunta" data-correcta="b">
+                <label>17.- Completa: _____ they _____ (play) video games?</label>
+                <div class="opcion"><input type="radio" name="pre17" value="a" id="p17a"><label for="p17a">Do / play</label></div>
+                <div class="opcion"><input type="radio" name="pre17" value="b" id="p17b"><label for="p17b">Are / playing</label></div>
+                <div class="opcion"><input type="radio" name="pre17" value="c" id="p17c"><label for="p17c">Did / play</label></div>
+                <div class="opcion"><input type="radio" name="pre17" value="d" id="p17d"><label for="p17d">Will / play</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Are / playing</div>
+            </div>
+
+            <!-- Pregunta 18 -->
+            <div class="pregunta" data-correcta="b">
+                <label>18.- ¿Cuál es la forma correcta del verbo "run" en presente progresivo?</label>
+                <div class="opcion"><input type="radio" name="pre18" value="a" id="p18a"><label for="p18a">runing</label></div>
+                <div class="opcion"><input type="radio" name="pre18" value="b" id="p18b"><label for="p18b">running</label></div>
+                <div class="opcion"><input type="radio" name="pre18" value="c" id="p18c"><label for="p18c">runned</label></div>
+                <div class="opcion"><input type="radio" name="pre18" value="d" id="p18d"><label for="p18d">runs</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: running</div>
+            </div>
+
+            <!-- Pregunta 19 -->
+            <div class="pregunta" data-correcta="b">
+                <label>19.- Completa: My brother _____ (not / work) today.</label>
+                <div class="opcion"><input type="radio" name="pre19" value="a" id="p19a"><label for="p19a">doesn't work</label></div>
+                <div class="opcion"><input type="radio" name="pre19" value="b" id="p19b"><label for="p19b">isn't working</label></div>
+                <div class="opcion"><input type="radio" name="pre19" value="c" id="p19c"><label for="p19c">didn't work</label></div>
+                <div class="opcion"><input type="radio" name="pre19" value="d" id="p19d"><label for="p19d">won't work</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: isn't working</div>
+            </div>
+
+            <!-- Pregunta 20 -->
+            <div class="pregunta" data-correcta="b">
+                <label>20.- ¿Qué significa "I am reading a book"?</label>
+                <div class="opcion"><input type="radio" name="pre20" value="a" id="p20a"><label for="p20a">Yo leo un libro (siempre)</label></div>
+                <div class="opcion"><input type="radio" name="pre20" value="b" id="p20b"><label for="p20b">Yo estoy leyendo un libro (ahora)</label></div>
+                <div class="opcion"><input type="radio" name="pre20" value="c" id="p20c"><label for="p20c">Yo leí un libro</label></div>
+                <div class="opcion"><input type="radio" name="pre20" value="d" id="p20d"><label for="p20d">Yo voy a leer un libro</label></div>
+                <div class="respuesta-correcta">Respuesta correcta: Yo estoy leyendo un libro (ahora)</div>
+            </div>
+
+            <button type="submit" class="btn-calificar" id="btnCalificar">Calificar examen</button>
+            <button type="button" class="btn-reintentar" id="btnReintentar">Reintentar examen</button>
+        </form>
+
+        <!-- Resultado -->
+        <div class="resultado" id="resultado">
+            <h2 id="tituloResultado"></h2>
+            <div class="puntaje" id="puntaje"></div>
+            <div class="porcentaje" id="porcentaje"></div>
+            <div class="mensaje" id="mensaje"></div>
+        </div>
+
+        <a href="inicioing.html" class="volver">← Volver al inicio</a>
+    </div>
+
+    <script>
+        const form = document.getElementById('examenForm');
+        const btnCalificar = document.getElementById('btnCalificar');
+        const btnReintentar = document.getElementById('btnReintentar');
+        const resultado = document.getElementById('resultado');
+        const preguntas = document.querySelectorAll('.pregunta');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let contestadas = 0;
+            let correctas = 0;
+
+            preguntas.forEach(pregunta => {
+                const respuestaCorrecta = pregunta.dataset.correcta;
+                const seleccionada = pregunta.querySelector('input[type="radio"]:checked');
+                const opciones = pregunta.querySelectorAll('.opcion');
+                const feedback = pregunta.querySelector('.respuesta-correcta');
+
+                // Limpiar clases anteriores
+                opciones.forEach(op => {
+                    op.classList.remove('correcta', 'incorrecta');
+                });
+                feedback.style.display = 'none';
+
+                if (seleccionada) {
+                    contestadas++;
+                    const valor = seleccionada.value;
+
+                    if (valor === respuestaCorrecta) {
+                        correctas++;
+                        seleccionada.closest('.opcion').classList.add('correcta');
+                    } else {
+                        seleccionada.closest('.opcion').classList.add('incorrecta');
+                        // Marcar la correcta
+                        const opcionCorrecta = pregunta.querySelector(`input[value="${respuestaCorrecta}"]`);
+                        if (opcionCorrecta) {
+                            opcionCorrecta.closest('.opcion').classList.add('correcta');
+                        }
+                        feedback.style.display = 'block';
+                    }
+                } else {
+                    // No contestó → mostrar la correcta
+                    const opcionCorrecta = pregunta.querySelector(`input[value="${respuestaCorrecta}"]`);
+                    if (opcionCorrecta) {
+                        opcionCorrecta.closest('.opcion').classList.add('correcta');
+                    }
+                    feedback.style.display = 'block';
+                }
+            });
+
+            // Validar que haya contestado al menos algunas
+            if (contestadas === 0) {
+                alert('Por favor contesta al menos una pregunta antes de calificar.');
+                return;
+            }
+
+            // Deshabilitar todos los inputs
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.disabled = true;
+            });
+
+            // Mostrar resultado
+            const total = preguntas.length;
+            const porcentaje = Math.round((correctas / total) * 100);
+            const aprobado = porcentaje >= 70;
+
+            document.getElementById('tituloResultado').textContent = aprobado ? '¡Felicidades!' : 'Sigue practicando';
+            document.getElementById('puntaje').textContent = `${correctas} / ${total}`;
+            document.getElementById('porcentaje').textContent = `${porcentaje}%`;
+            
+            let mensaje = '';
+            if (porcentaje === 100) {
+                mensaje = '¡Excelente! Dominas perfectamente el presente progresivo.';
+            } else if (porcentaje >= 90) {
+                mensaje = '¡Muy bien! Solo te faltaron unos detalles.';
+            } else if (porcentaje >= 70) {
+                mensaje = 'Aprobado. Buen trabajo, sigue practicando para perfeccionarlo.';
+            } else if (porcentaje >= 50) {
+                mensaje = 'Estás cerca. Revisa las respuestas incorrectas y vuelve a intentarlo.';
+            } else {
+                mensaje = 'Necesitas repasar más el tema. ¡No te rindas!';
+            }
+            document.getElementById('mensaje').textContent = mensaje;
+
+            resultado.className = 'resultado ' + (aprobado ? 'aprobado' : 'reprobado');
+            resultado.style.display = 'block';
+
+            // Cambiar botones
+            btnCalificar.style.display = 'none';
+            btnReintentar.style.display = 'block';
+
+            // Scroll suave al resultado
+            resultado.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        // Botón reintentar
+        btnReintentar.addEventListener('click', function() {
+            // Reiniciar formulario
+            form.reset();
+
+            // Habilitar inputs
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.disabled = false;
+            });
+
+            // Limpiar clases y feedback
+            document.querySelectorAll('.opcion').forEach(op => {
+                op.classList.remove('correcta', 'incorrecta');
+            });
+            document.querySelectorAll('.respuesta-correcta').forEach(fb => {
+                fb.style.display = 'none';
+            });
+
+            // Ocultar resultado y restaurar botón
+            resultado.style.display = 'none';
+            btnCalificar.style.display = 'block';
+            btnReintentar.style.display = 'none';
+
+            // Scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
